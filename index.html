@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML Files</title>
+<style>
+  /* ============================================================
+     OPTIONAL SETTINGS
+     Usually you don't need to touch anything. On GitHub Pages
+     (username.github.io/repo-name) the repo is detected automatically.
+     Fill these in only if you use a custom domain.
+     ============================================================ */
+</style>
+<script>
+  const CONFIG = {
+    owner:  "",   // e.g. "my-github-username"   (leave empty to auto-detect)
+    repo:   "",   // e.g. "web-collaterals"      (leave empty to auto-detect)
+    branch: "",   // e.g. "main"                 (leave empty = repo's default branch)
+    folder: ""    // only if GitHub Pages serves from a subfolder, e.g. "docs"
+  };
+</script>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280;
+    --line: #e4e7ec; --accent: #2f6fed; --accent-soft: #e8f0fe; --hover: #f1f4f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1218; --panel: #171b23; --text: #e6e9ef; --muted: #8b93a3;
+      --line: #262c38; --accent: #6b9bff; --accent-soft: #1d2840; --hover: #1d222c;
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex; flex-direction: column;
+  }
+  header {
+    padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--panel);
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  header h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  header .repo { color: var(--muted); font-size: 13px; }
+  header .repo a { color: inherit; }
+  header .spacer { flex: 1; }
+  input[type=search], input[type=text] {
+    font: inherit; color: var(--text); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; min-width: 0;
+  }
+  input[type=search] { width: 260px; max-width: 100%; }
+  button {
+    font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--panel);
+    color: var(--text); border-radius: 8px; padding: 7px 12px;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  main { flex: 1; display: flex; min-height: 0; }
+  #list {
+    width: 360px; flex-shrink: 0; overflow: auto; border-right: 1px solid var(--line);
+    background: var(--panel); padding: 8px 0;
+  }
+  .folder {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+    padding: 12px 18px 4px; font-weight: 600;
+  }
+  .item {
+    display: flex; align-items: center; gap: 8px; padding: 7px 10px 7px 18px; cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+  .item:hover { background: var(--hover); }
+  .item.active { background: var(--accent-soft); border-left-color: var(--accent); }
+  .item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item .size { color: var(--muted); font-size: 12px; }
+  .item a.open {
+    color: var(--muted); text-decoration: none; padding: 2px 6px; border-radius: 6px; font-size: 14px;
+  }
+  .item a.open:hover { color: var(--accent); background: var(--panel); }
+  #preview { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  #bar {
+    display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+    border-bottom: 1px solid var(--line); background: var(--panel); font-size: 13px;
+  }
+  #bar .path { flex: 1; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #bar a { color: var(--accent); text-decoration: none; white-space: nowrap; }
+  iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+  .empty { margin: auto; color: var(--muted); text-align: center; padding: 30px; }
+  .msg { padding: 18px; color: var(--muted); }
+  .msg.error { color: #d14343; }
+  #setup {
+    max-width: 460px; margin: 60px auto; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 24px;
+  }
+  #setup h2 { margin: 0 0 6px; font-size: 18px; }
+  #setup p { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+  #setup form { display: flex; gap: 8px; }
+  #setup input { flex: 1; }
+  @media (max-width: 760px) {
+    header { padding: 12px 16px; }
+    input[type=search] { width: 100%; }
+    main { flex-direction: column; }
+    #list { width: 100%; border-right: 0; border-bottom: 1px solid var(--line); max-height: 45vh; }
+    #preview { min-height: 55vh; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>HTML Files</h1>
+  <span class="repo" id="repoLabel"></span>
+  <span class="spacer"></span>
+  <input type="search" id="search" placeholder="Search files…" autocomplete="off">
+  <button id="refresh" title="Reload file list">Refresh</button>
+</header>
+
+<main id="main">
+  <div id="list"><div class="msg">Loading…</div></div>
+  <section id="preview">
+    <div id="bar" hidden>
+      <span class="path" id="curPath"></span>
+      <a id="openNew" target="_blank" rel="noopener">Open in new tab ↗</a>
+      <a id="viewSrc" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+    <div class="empty" id="emptyState">Select a file to preview it here.</div>
+    <iframe id="frame" hidden title="Preview"></iframe>
+  </section>
+</main>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    sget(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    sset(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} },
+    sdel(k) { try { sessionStorage.removeItem(k); } catch (e) {} }
+  };
+
+  // ---------- Work out which repo we're in ----------
+  function detectRepo() {
+    const q = new URLSearchParams(location.search);
+    if (q.get("repo") && q.get("repo").includes("/")) {
+      const [owner, repo] = q.get("repo").split("/");
+      return { owner, repo, branch: q.get("branch") || CONFIG.branch, onPages: false };
+    }
+    if (CONFIG.owner && CONFIG.repo) {
+      return { owner: CONFIG.owner, repo: CONFIG.repo, branch: CONFIG.branch, onPages: true };
+    }
+    const host = location.hostname.toLowerCase();
+    const m = host.match(/^([a-z0-9-]+)\.github\.io$/);
+    if (m) {
+      const owner = m[1];
+      const first = location.pathname.split("/").filter(Boolean)[0];
+      // Project site: owner.github.io/repo/...  —  User site: owner.github.io/
+      if (first && !/\.html?$/i.test(first)) {
+        return { owner, repo: first, branch: CONFIG.branch, onPages: true, base: "/" + first + "/" };
+      }
+      return { owner, repo: owner + ".github.io", branch: CONFIG.branch, onPages: true, base: "/" };
+    }
+    const saved = store.get("htmlIndexRepo");
+    if (saved && saved.includes("/")) {
+      const [owner, repo] = saved.split("/");
+      return { owner, repo, branch: CONFIG.branch, onPages: false };
+    }
+    return null;
+  }
+
+  function showSetup() {
+    $("main").innerHTML =
+      '<div id="setup"><h2>Which repository?</h2>' +
+      '<p>Couldn\'t detect the GitHub repo automatically (this happens on custom domains or when opened locally). ' +
+      'Enter it as <b>owner/repo</b>, or set it in the CONFIG at the top of index.html.</p>' +
+      '<form id="setupForm"><input type="text" id="repoInput" placeholder="owner/repo" required>' +
+      '<button class="primary">Load</button></form></div>';
+    $("setupForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = $("repoInput").value.trim().replace(/^https?:\/\/github\.com\//, "").replace(/\/$/, "");
+      if (!v.includes("/")) return;
+      store.set("htmlIndexRepo", v);
+      location.reload();
+    });
+  }
+
+  const info = detectRepo();
+  if (!info) { showSetup(); return; }
+
+  const folder = (CONFIG.folder || "").replace(/^\/|\/$/g, "");
+  const repoUrl = `https://github.com/${info.owner}/${info.repo}`;
+  $("repoLabel").innerHTML = `<a href="${repoUrl}" target="_blank" rel="noopener">${info.owner}/${info.repo}</a>`;
+
+  // Public URL of a file
+  function fileUrl(path) {
+    let p = folder && path.startsWith(folder + "/") ? path.slice(folder.length + 1) : path;
+    p = p.split("/").map(encodeURIComponent).join("/");
+    if (info.onPages) return (info.base || "./") + p;
+    // Not on Pages: point at the repo's GitHub Pages site
+    const site = info.repo.toLowerCase() === info.owner.toLowerCase() + ".github.io"
+      ? `https://${info.owner}.github.io/` : `https://${info.owner}.github.io/${info.repo}/`;
+    return site + p;
+  }
+
+  async function gh(url) {
+    const r = await fetch(url, { headers: { Accept: "application/vnd.github+json" } });
+    if (!r.ok) {
+      let msg = `GitHub API error ${r.status}`;
+      if (r.status === 403 || r.status === 429) msg = "GitHub API rate limit reached (60 requests/hour). Try again later.";
+      if (r.status === 404) msg = "Repository not found. If it is private, this page can't list it.";
+      throw new Error(msg);
+    }
+    return r.json();
+  }
+
+  async function loadFiles(force) {
+    const key = `htmlIndex:${info.owner}/${info.repo}`;
+    if (!force) {
+      const c = store.sget(key);
+      if (c) {
+        const o = JSON.parse(c);
+        if (Date.now() - o.t < 5 * 60 * 1000) return o;
+      }
+    } else store.sdel(key);
+
+    let branch = info.branch;
+    if (!branch) branch = (await gh(`https://api.github.com/repos/${info.owner}/${info.repo}`)).default_branch;
+    const tree = await gh(`https://api.github.com/repos/${info.owner}/${info.repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
+    const files = tree.tree
+      .filter((n) => n.type === "blob" && /\.html?$/i.test(n.path))
+      .filter((n) => !folder || n.path.startsWith(folder + "/"))
+      .filter((n) => !/^(index\.html?)$/i.test(folder ? n.path.slice(folder.length + 1) : n.path))
+      .filter((n) => !n.path.split("/").some((s) => s === "node_modules" || s.startsWith(".")))
+      .map((n) => ({ path: n.path, size: n.size }))
+      .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: "base" }));
+    const o = { t: Date.now(), branch, files, truncated: !!tree.truncated };
+    store.sset(key, JSON.stringify(o));
+    return o;
+  }
+
+  const fmtSize = (b) => b < 1024 ? b + " B" : b < 1048576 ? (b / 1024).toFixed(0) + " KB" : (b / 1048576).toFixed(1) + " MB";
+  const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  let data = null, current = null;
+
+  function render() {
+    const q = $("search").value.trim().toLowerCase();
+    const files = data.files.filter((f) => f.path.toLowerCase().includes(q));
+    if (!data.files.length) { $("list").innerHTML = '<div class="msg">No other HTML files found in this repo.</div>'; return; }
+    if (!files.length) { $("list").innerHTML = '<div class="msg">No files match your search.</div>'; return; }
+
+    const groups = {};
+    files.forEach((f) => {
+      const i = f.path.lastIndexOf("/");
+      const dir = i < 0 ? "" : f.path.slice(0, i);
+      (groups[dir] = groups[dir] || []).push(f);
+    });
+    let html = `<div class="msg" style="padding:6px 18px 2px;font-size:13px">${files.length} file${files.length === 1 ? "" : "s"}</div>`;
+    Object.keys(groups).sort().forEach((dir) => {
+      if (dir || Object.keys(groups).length > 1) html += `<div class="folder">${esc(dir || "Root")}</div>`;
+      groups[dir].forEach((f) => {
+        const name = f.path.slice(f.path.lastIndexOf("/") + 1);
+        html += `<div class="item${current === f.path ? " active" : ""}" data-path="${esc(f.path)}" title="${esc(f.path)}">
+          <span class="name">${esc(name)}</span><span class="size">${fmtSize(f.size)}</span>
+          <a class="open" href="${esc(fileUrl(f.path))}" target="_blank" rel="noopener" title="Open in new tab">↗</a></div>`;
+      });
+    });
+    if (data.truncated) html += '<div class="msg">Repo is very large; some files may be missing.</div>';
+    $("list").innerHTML = html;
+  }
+
+  function select(path) {
+    current = path;
+    const url = fileUrl(path);
+    $("frame").hidden = false; $("emptyState").hidden = true; $("bar").hidden = false;
+    $("frame").src = url;
+    $("curPath").textContent = path;
+    $("openNew").href = url;
+    $("viewSrc").href = `${repoUrl}/blob/${encodeURIComponent(data.branch)}/${path.split("/").map(encodeURIComponent).join("/")}`;
+    document.querySelectorAll(".item").forEach((el) => el.classList.toggle("active", el.dataset.path === path));
+    history.replaceState(null, "", "#" + encodeURIComponent(path));
+  }
+
+  $("list").addEventListener("click", (e) => {
+    if (e.target.closest("a.open")) return;
+    const item = e.target.closest(".item");
+    if (item) select(item.dataset.path);
+  });
+  $("search").addEventListener("input", render);
+  $("refresh").addEventListener("click", () => start(true));
+
+  async function start(force) {
+    $("list").innerHTML = '<div class="msg">Loading…</div>';
+    try {
+      data = await loadFiles(force);
+      render();
+      const fromHash = decodeURIComponent(location.hash.slice(1));
+      if (fromHash && data.files.some((f) => f.path === fromHash)) select(fromHash);
+    } catch (err) {
+      $("list").innerHTML = `<div class="msg error">${esc(err.message)}</div>`;
+    }
+  }
+  start(false);
+})();
+</script>
+</body>
+</html>
